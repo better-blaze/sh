@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>이 세상에 어린이가 100명이라면?</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background-color: #f7f9fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        h1 { color: #2c3e50; font-size: 1.4rem; margin-bottom: 25px; }
+        .question-box { margin-bottom: 20px; font-size: 1.15rem; color: #34495e; line-height: 1.5; font-weight: 600; min-height: 60px; }
+        .input-group { margin-bottom: 25px; }
+        input { width: 80px; padding: 12px; font-size: 1.1rem; text-align: center; border: 2px solid #e0e6ed; border-radius: 10px; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: #3498db; }
+        button { width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.3s; }
+        button:hover { background-color: #2980b9; }
+        #result { margin-top: 20px; font-size: 1.1rem; }
+        .progress { font-size: 0.9rem; color: #95a5a6; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="progress" id="progress">1 / 4</div>
+    <h1>🌍 이 세상에 어린이가 100명이라면?💕</h1>
+    
+    <div id="game-area">
+        <div class="question-box" id="question">문제를 불러오는 중...</div>
+        <div class="input-group">
+            <input type="number" id="user-input" min="0" max="100" placeholder="0~100"> 명
+        </div>
+        <button onclick="nextQuestion()">다음 문제</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const questions = [
+        { q: "한국인 어린이는 몇 명일까요?", a: 1 },
+        { q: "기독교를 믿는 어린이는 몇 명일까요?", a: 33 },
+        { q: "도시에서 사는 어린이는 몇 명일까요?", a: 48 },
+        { q: "병원에서 태어나지 못한 어린이는 몇 명일까요?", a: 34 },
+        { q: "길에서 노숙해야 하는 어린이는 몇 명일까요?", a: 5 },
+        { q: "전쟁 중인 국가에 사는 어린이는 몇 명일까요?", a: 13 },
+        { q: "집에 전기가 들어오지 않는 어린이는 몇 명일까요?", a: 21 },
+        { q: "신발이 하나도 없는 어린이는 몇 명일까요?", a: 16 },
+        { q: "피난 가는 어린이는 몇 명일까요?", a: 1 },
+        { q: "이미 결혼한 어린이는 몇 명일까요?", a: 3 },
+        { q: "부모님 두분 모두 직업이 없는 어린이는 몇 명일까요?", a: 10 },
+        { q: "집에서 인터넷을 할 수 있는 어린이는 몇 명일까요?", a: 50 },
+        { q: "학교나 유치원에 다니지 못하는 어린이는 몇 명일까요?", a: 46 },
+        { q: "비만인 어린이는 몇 명일까요?", a: 16 },
+        { q: "깨끗한 물을 마시지 못하는 어린이는 몇 명일까요?", a: 15 }
+    ];
+
+    let currentIdx = 0;
+    let totalScore = 0;
+
+    function loadQuestion() {
+        if (currentIdx < questions.length) {
+            document.getElementById('progress').innerText = `${currentIdx + 1} / ${questions.length}`;
+            document.getElementById('question').innerText = `Q. ${questions[currentIdx].q}`;
+            const input = document.getElementById('user-input');
+            input.value = '';
+            input.focus();
+        } else {
+            showFinalResult();
+        }
+    }
+
+    function nextQuestion() {
+        const input = document.getElementById('user-input');
+        const userVal = parseInt(input.value);
+
+        if (isNaN(userVal) || userVal < 0 || userVal > 100) {
+            alert("0에서 100 사이의 숫자를 입력해주세요!");
+            return;
+        }
+
+        const a = questions[currentIdx].a;
+        const b = userVal;
+        
+        // 수정된 공식: 100 - (정답과 내 답의 차이)
+        // 가장 먼 답을 적으면 0점이 나옵니다.
+        const score = 100 - Math.abs(a - b);
+        totalScore += score;
+
+        currentIdx++;
+        loadQuestion();
+    }
+
+    function showFinalResult() {
+        document.getElementById('game-area').style.display = 'none';
+        document.getElementById('progress').style.display = 'none';
+        
+        const avgScore = Math.round(totalScore / questions.length);
+        let message = "";
+        
+        if (avgScore > 85) message = "정말 대단해요! 어린이들의 현실을 아주 잘 알고 계시는군요.";
+        else if (avgScore > 70) message = "어린이들의 상황에 대해 꽤 잘 알고 계시네요!";
+        else message = "이번 기회에 어린이들의 현실에 대해 조금 더 관심을 가져볼까요?";
+
+        document.getElementById('result').innerHTML = `
+            <h2 style="color:#2ecc71;">게임 종료!</h2>
+            <div style="font-size: 1.5rem; margin: 20px 0;">총점: <strong>${totalScore}</strong>점</div>
+            <p style="color:#7f8c8d; line-height:1.6;">${message}</p>
+            <button onclick="location.reload()" style="background-color:#2ecc71;">다시 도전하기</button>
+        `;
+    }
+
+    // 엔터키 입력 시 다음 문제로
+    document.getElementById('user-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            nextQuestion();
+        }
+    });
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
